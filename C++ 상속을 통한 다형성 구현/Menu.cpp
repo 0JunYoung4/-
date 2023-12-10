@@ -1,4 +1,6 @@
 #include <iostream>
+#include <fstream>
+#include <string>
 #include "circle.h"
 #include "point.h"
 #include "rectangle.h"
@@ -9,60 +11,83 @@
 
 int StartMenu(ShapeManager& sm)
 {
+	std::string fileSave;
 	int n;
 	while (n!=0) {
 		int user;
 		drawMenu();
 		std::cin >> user;
 
-		if (user < 1 || user>4)
+		if (user < 1 || user>5) {
+			drawEnd();
 			break;
+		}
 
 		switch (user)
 		{
 		case 1:		// 원하는 도형 추가
-			std::cout << "(1) - 삼각형" << '\n';
-			std::cout << "(2) - 사각형" << '\n';
-			std::cout << "(3) - 원" << '\n';
-			int put;
-			std::cin >> put;
-			switch (put)
-			{
-			case 1:		// 삼각형 추가
-				sm.insert(new Triangle());
-				std::cout << "삼각형 생성" << '\n';
-				return put;
-			case 2:		// 사각형 추가
-				sm.insert(new Rectangle());
-				std::cout << "사각형 생성" << '\n';
-				return put;
-			case 3:		// 원 추가
-				sm.insert(new Circle());
-				std::cout << "원 생성" << '\n';
-				return put;
-			}
+			fileSave += 1;
+			sm.insert(addShape(fileSave));
+			break;
 		case 2:		// 전체 도형 그리기
 			sm.draw();
-			return put;
+			break;
 		case 3:		// 도형 제거
+			fileSave += 3;
 			Delete();		// 도형 제거 문구
-			int n;
-			std::cin >> n;
-			switch (n)
+			int in;
+			std::cin >> in;
+			fileSave += in;
+
+			switch (in)
 			{
 			case 1:		// n번째 도형 지우기
-				sm.erase(D_Number(sm));
-				return n;
+				sm.erase(D_Number(sm, fileSave));
+				break;
 			case 2:		// 특정 도형 지우기
 				D_Shape();
-				return n;
+				break;
 			}
+			break;
 
 		case 4:		// 프로그램 끝내기
 			drawEnd();
+			return 0;
+
+		case 5:
+			std::cout << "\t[1] - 저장\n";
+			std::cout << "\t[2] - 불러오기\n";
+			int in2;
+			std::cin >> in2;
+
+			// 저장
+			if (in2 == 1) {
+				std::ofstream out("shapeInfo.txt");
+				out << fileSave;
+				std::cout << "저장 성공!\n";
+			}
+			else if (in2 == 2) {
+				std::ifstream in("shapeInfo.txt");
+				std::string str;
+				in >> str;
+				// 1 1 2 3 124141231
+				std::string result;
+
+				for (char c : str) {
+					result += c;
+					result += ' ';
+				}
+				
+				for (int i = 0; i < sm.getnShape(); ++i) {
+					sm.erase(i);
+				}
+				std::cin >> result ;
+
+			}
+
+		default:
 			break;
 		}
-		n = 0;
 	}
-	return 0;
+	return n;
 }

@@ -17,4 +17,7 @@ public:
 	void draw() const;		// 전체 도형을 그리는 함수
 
 	void erase(int);
+	
+	int getnShape() { return nShape; };
+
 };
